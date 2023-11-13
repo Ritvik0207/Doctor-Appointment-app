@@ -1,0 +1,56 @@
+/* Add this CSS to your stylesheets or in a style tag within your component */
+
+/* Style for the entire form */
+.form-container {
+    max-width: 800px;
+    margin: auto;
+}
+
+/* Style for the form title */
+.form-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Style for form sections (Personal Details, Professional Details) */
+.form-section {
+    margin-bottom: 30px;
+}
+
+/* Style for form labels */
+.form-label {
+    font-size: 18px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+/* Style for form inputs */
+.form-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+/* Style for the TimePicker */
+.ant-picker-time-panel {
+    width: 200px;
+    /* Adjust as needed */
+}
+
+/* Style for the submit button */
+.form-btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.form-btn:hover {
+    background-color: #0056b3;
+}

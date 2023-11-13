@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { showLoading, hideLoading } from "../redux/features/alertSlice";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import "../styles/notification.css";
 
 const NotificationPage = () => {
     const dispatch = useDispatch();
@@ -65,47 +66,49 @@ const NotificationPage = () => {
     };
     return (
         <Layout>
-            <h4 className="p-3 text-center">Notification Page</h4>
-            <Tabs>
-                <Tabs.TabPane tab="unRead" key={0}>
-                    <div className="d-flex justify-content-end">
-                        <h4 className="p-2" onClick={handleMarkAllRead}>
-                            Mark All Read
-                        </h4>
-                    </div>
-                    {user?.notifcation.map((notificationMgs) => (
-                        <div className="card" style={{ cursor: "pointer" }}>
-                            <div
-                                className="card-text"
-                                onClick={() => navigate(notificationMgs.onClickPath)}
-                            >
-                                {notificationMgs.message}
-                            </div>
+            <div className="notification-container">
+                <h4 className="p-3 text-center">Notification Page</h4>
+                <Tabs>
+                    <Tabs.TabPane tab="UnRead" key={0}>
+                        <div className="d-flex justify-content-end">
+                            <h4 className="p-2" onClick={handleMarkAllRead}>
+                                Mark All Read
+                            </h4>
                         </div>
-                    ))}
-                </Tabs.TabPane>
-                <Tabs.TabPane tab="Read" key={1}>
-                    <div className="d-flex justify-content-end">
-                        <h4
-                            className="p-2 text-primary"
-                            style={{ cursor: "pointer" }}
-                            onClick={handleDeleteAllRead}
-                        >
-                            Delete All Read
-                        </h4>
-                    </div>
-                    {user?.seennotification.map((notificationMgs) => (
-                        <div className="card" style={{ cursor: "pointer" }}>
-                            <div
-                                className="card-text"
-                                onClick={() => navigate(notificationMgs.onClickPath)}
-                            >
-                                {notificationMgs.message}
+                        {user?.notifcation.map((notificationMgs) => (
+                            <div className="card" style={{ cursor: "pointer" }}>
+                                <div
+                                    className="card-text"
+                                    onClick={() => navigate(notificationMgs.onClickPath)}
+                                >
+                                    {notificationMgs.message}
+                                </div>
                             </div>
+                        ))}
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab="Read" key={1}>
+                        <div className="d-flex justify-content-end">
+                            <h4
+                                className="p-2 text-primary"
+                                style={{ cursor: "pointer" }}
+                                onClick={handleDeleteAllRead}
+                            >
+                                Delete All Read
+                            </h4>
                         </div>
-                    ))}
-                </Tabs.TabPane>
-            </Tabs>
+                        {user?.seennotification.map((notificationMgs) => (
+                            <div className="card" style={{ cursor: "pointer" }}>
+                                <div
+                                    className="card-text"
+                                    onClick={() => navigate(notificationMgs.onClickPath)}
+                                >
+                                    {notificationMgs.message}
+                                </div>
+                            </div>
+                        ))}
+                    </Tabs.TabPane>
+                </Tabs>
+            </div>
         </Layout>
     );
 };

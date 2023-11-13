@@ -1,4 +1,170 @@
+/* LayoutStyles.css */
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+}
+
 .main {
+    display: flex;
+    min-height: 100vh;
+}
+
+.layout {
+    display: flex;
+    width: 100%;
+}
+
+.sidebar {
+    width: 220px;
+    background-color: #001529;
+    color: #fff;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logo h6 {
+    color: #1890ff;
+    font-size: 1.5rem;
+}
+
+.logo hr {
+    border-color: #1890ff;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    color: #fff;
+    transition: background-color 0.3s;
+}
+
+.menu-item:hover {
+    background-color: #1890ff;
+}
+
+.menu-item i {
+    margin-right: 10px;
+}
+
+.menu-item a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.menu-item.active {
+    background-color: #1890ff;
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+}
+
+.header-content a {
+    margin-left: 20px;
+    color: #1890ff;
+    text-decoration: none;
+}
+
+.body {
+    margin-top: 20px;
+}
+
+/* Badge Component Styling */
+.ant-badge-count {
+    background-color: #ff4d4f;
+    color: #fff;
+    box-shadow: 0 0 0 1px #fff;
+}
+
+/* Stylish Card for Content Area */
+.stylish-card {
+    background-color: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Stylish Button */
+.stylish-button {
+    background-color: #1890ff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    background-color: #fff;
+    padding: 15px 20px;
+    border-radius: 5px;
+    /* Adjust the padding values to make the header bigger */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.stylish-button:hover {
+    background-color: #096dd9;
+}
+
+.header-content a {
+    margin-left: 30px;
+    /* Adjust the margin as needed to create space */
+    color: #1890ff;
+    text-decoration: none;
+    font-size: 1.2rem;
+    /* Adjust the font size for the user name */
+}
+
+.header-content i {
+    font-size: 1.5rem;
+    /* Adjust the font size for the bell icon */
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    color: #fff;
+    transition: background-color 0.3s;
+    margin-bottom: 5px;
+    /* Adjust the margin to add space between menu items */
+}
+
+
+/* .main {
     padding: 10px;
     height: 100vh;
 }
@@ -90,4 +256,4 @@
     color: blue;
     margin: 0 10px;
     text-transform: uppercase;
-}
+} */
