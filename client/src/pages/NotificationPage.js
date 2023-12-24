@@ -26,6 +26,7 @@ const NotificationPage = () => {
                     },
                 }
             );
+            window.location.reload();
             dispatch(hideLoading());
             if (res.data.success) {
                 message.success(res.data.message);
@@ -52,6 +53,7 @@ const NotificationPage = () => {
                     },
                 }
             );
+            window.location.reload();
             dispatch(hideLoading());
             if (res.data.success) {
                 message.success(res.data.message);
@@ -71,7 +73,8 @@ const NotificationPage = () => {
                 <Tabs>
                     <Tabs.TabPane tab="UnRead" key={0}>
                         <div className="d-flex justify-content-end">
-                            <h4 className="p-2" onClick={handleMarkAllRead}>
+                            <h4 className="p-2 text-primary"
+                                style={{ cursor: "pointer" }} onClick={handleMarkAllRead}>
                                 Mark All Read
                             </h4>
                         </div>
@@ -79,7 +82,7 @@ const NotificationPage = () => {
                             <div className="card" style={{ cursor: "pointer" }}>
                                 <div
                                     className="card-text"
-                                    onClick={() => navigate(notificationMgs.onClickPath)}
+                                    onClick={() => navigate(notificationMgs.onCLickPath)}
                                 >
                                     {notificationMgs.message}
                                 </div>
@@ -100,7 +103,7 @@ const NotificationPage = () => {
                             <div className="card" style={{ cursor: "pointer" }}>
                                 <div
                                     className="card-text"
-                                    onClick={() => navigate(notificationMgs.onClickPath)}
+                                    onClick={() => navigate(notificationMgs.onCLickPath)}
                                 >
                                     {notificationMgs.message}
                                 </div>

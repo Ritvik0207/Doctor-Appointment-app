@@ -17,16 +17,22 @@ const Profile = () => {
     //handle form
     const handleFinish = async (values) => {
         try {
+
+            const adjustedTimings = [
+                values.timings[0].format("HH:mm"),
+                values.timings[1].format("HH:mm"),
+            ];
             dispatch(showLoading());
             const res = await axios.post(
                 "/api/v1/doctor/updateProfile",
                 {
                     ...values,
                     userId: user._id,
-                    timings: [
-                        moment(values.timings[0]).format("HH:mm"),
-                        moment(values.timings[1]).format("HH:mm"),
-                    ],
+                    // timings: [
+                    //     moment(values.timings[0]).format("HH:mm"),
+                    //     moment(values.timings[1]).format("HH:mm"),
+                    // ],
+                    timings: adjustedTimings,
                 },
                 {
                     headers: {
@@ -39,7 +45,7 @@ const Profile = () => {
                 message.success(res.data.message);
                 navigate("/");
             } else {
-                message.error(res.data.success);
+                message.error(res.data.message);
             }
         } catch (error) {
             dispatch(hideLoading());

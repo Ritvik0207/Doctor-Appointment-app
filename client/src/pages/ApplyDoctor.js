@@ -27,15 +27,20 @@ const ApplyDoctor = () => {
             //         },
             //     }
             // );
+            const adjustedTimings = [
+                values.timings[0].format("HH:mm"),
+                values.timings[1].format("HH:mm"),
+            ];
             const res = await axios.post(
                 "/api/v1/user/apply-doctor",
                 {
                     ...values,
                     userId: user._id,
-                    timings: [
-                        moment(values.timings[0]).format("HH:mm"),
-                        moment(values.timings[1]).format("HH:mm"),
-                    ],
+                    // timings: [
+                    //     moment(values.timings[0]).format("HH:mm"),
+                    //     moment(values.timings[1]).format("HH:mm"),
+                    // ],
+                    timings: adjustedTimings
                 },
                 {
                     headers: {
@@ -45,14 +50,13 @@ const ApplyDoctor = () => {
             );
             dispatch(hideLoading());
             if (res.data.success) {
-                message.success(res.data.success);
+                message.success(res.data.message);
                 navigate("/");
             } else {
-                message.error(res.data.success);
+                message.error(res.data.message);
             }
         } catch (error) {
             dispatch(hideLoading());
-            console.log("nen erripuk")
             console.log(error);
             message.error("Somthing Went Wrrong ");
         }

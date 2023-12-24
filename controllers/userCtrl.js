@@ -1,10 +1,11 @@
-
 const bcrypt = require('bcryptjs');
 const userModel = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const doctorModel = require('../models/doctorModel');
 const appointmentModel = require('../models/appointmentModel');
 const moment = require("moment");
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
 
 // const registerController = async (req, res) => {
 //     try {
@@ -108,6 +109,7 @@ const authController = async (req, res) => {
 
 const applyDoctorController = async (req, res) => {
     try {
+
         const newDoctor = await doctorModel({ ...req.body, status: "pending" });
         await newDoctor.save();
         const adminUser = await userModel.findOne({ isAdmin: true });
@@ -118,13 +120,13 @@ const applyDoctorController = async (req, res) => {
             data: {
                 doctorId: newDoctor._id,
                 name: newDoctor.firstName + " " + newDoctor.lastName,
-                onClickPath: "/admin/docotrs",
+                onCLickPath: "/admin/doctors",
             },
         });
         await userModel.findByIdAndUpdate(adminUser._id, { notifcation });
         res.status(201).send({
             success: true,
-            message: "Doctor Account Applied SUccessfully",
+            message: "Doctor Account Applied Successfully",
         });
     } catch (error) {
         console.log(error);
@@ -230,7 +232,6 @@ const bookAppointmnetController = async (req, res) => {
     try {
         req.body.date = moment(req.body.date, "DD-MM-YYYY").toISOString();
         req.body.time = moment(req.body.time, "HH:mm").toISOString();
-        console.log(req.body.date);
         req.body.status = "pending";
         const newAppointment = new appointmentModel(req.body);
         await newAppointment.save();
@@ -238,7 +239,7 @@ const bookAppointmnetController = async (req, res) => {
         user.notifcation.push({
             type: "New-appointment-request",
             message: `A nEw Appointment Request from ${req.body.userInfo.name}`,
-            onCLickPath: "/user/appointments",
+            onCLickPath: "/doctor-appointments",
         });
         await user.save();
         res.status(200).send({
@@ -255,21 +256,22 @@ const bookAppointmnetController = async (req, res) => {
     }
 };
 
-// booking bookingAvailabilityController
+//booking bookingAvailabilityController
 const bookingAvailabilityController = async (req, res) => {
     try {
-        const date = moment(req.body.date, "DD-MM-YY").toISOString();
+        const date = moment(req.body.date, "DD-MM-YYYY").toISOString();
         const fromTime = moment(req.body.time, "HH:mm")
             .subtract(1, "hours")
             .toISOString();
         const toTime = moment(req.body.time, "HH:mm").add(1, "hours").toISOString();
         const doctorId = req.body.doctorId;
+        const finaltime = moment(req.body.time, "HH:mm").toISOString();
         const appointments = await appointmentModel.find({
             doctorId,
             date,
             time: {
-                $gte: fromTime,
-                $lte: toTime,
+                $gte: finaltime,
+                $lte: finaltime,
             },
         });
         if (appointments.length > 0) {
@@ -292,6 +294,75 @@ const bookingAvailabilityController = async (req, res) => {
         });
     }
 };
+// const bookAppointmentController = async (req, res) => {
+//     try {
+//         const appointmentTime = new Date(`${req.body.date}T${req.body.time}`);
+//         const oneHourLater = new Date(appointmentTime.getTime() + 60 * 60 * 1000);
+
+//         req.body.status = "pending";
+//         const newAppointment = new appointmentModel({
+//             ...req.body,
+//             time: appointmentTime.toISOString(),
+//         });
+//         await newAppointment.save();
+
+//         const user = await userModel.findOne({ _id: req.body.doctorInfo.userId });
+//         user.notification.push({
+//             type: "New-appointment-request",
+//             message: `A new Appointment Request from ${req.body.userInfo.name}`,
+//             onClickPath: "/doctor-appointments",
+//         });
+//         await user.save();
+
+//         res.status(200).send({
+//             success: true,
+//             message: "Appointment Booked successfully",
+//         });
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).send({
+//             success: false,
+//             error,
+//             message: "Error While Booking Appointment",
+//         });
+//     }
+// };
+// const bookingAvailabilityController = async (req, res) => {
+//     try {
+//         const appointmentTime = new Date(`${req.body.date}T${req.body.time}`);
+//         const oneHourBefore = new Date(appointmentTime.getTime() - 60 * 60 * 1000);
+//         const oneHourLater = new Date(appointmentTime.getTime() + 60 * 60 * 1000);
+
+//         const doctorId = req.body.doctorId;
+//         const appointments = await appointmentModel.find({
+//             doctorId,
+//             date: req.body.date,
+//             time: {
+//                 $gte: oneHourBefore.toISOString(),
+//                 $lte: oneHourLater.toISOString(),
+//             },
+//         });
+
+//         if (appointments.length > 0) {
+//             return res.status(200).send({
+//                 message: "Appointments not available at this time",
+//                 success: true,
+//             });
+//         } else {
+//             return res.status(200).send({
+//                 success: true,
+//                 message: "Appointments available",
+//             });
+//         }
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).send({
+//             success: false,
+//             error,
+//             message: "Error In Booking",
+//         });
+//     }
+// };
 
 const userAppointmentsController = async (req, res) => {
     try {
@@ -312,7 +383,53 @@ const userAppointmentsController = async (req, res) => {
         });
     }
 };
+const paymentController = async (req, res) => {
+    try {
+        const instance = new Razorpay({
+            key_id: process.env.KEY_ID,
+            key_secret: process.env.KEY_SECRET,
+        });
+
+        const options = {
+            amount: req.body.amount * 100,
+            currency: "INR",
+            receipt: crypto.randomBytes(10).toString("hex"),
+        };
+
+        instance.orders.create(options, (error, order) => {
+            if (error) {
+                console.log(error);
+                return res.status(500).json({ message: "Something Went Wrong!" });
+            }
+            res.status(200).json({ data: order });
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Internal Server Error!" });
+        console.log(error);
+    }
+}
+
+const verifyController = async (req, res) => {
+    try {
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+            req.body;
+        const sign = razorpay_order_id + "|" + razorpay_payment_id;
+        const expectedSign = crypto
+            .createHmac("sha256", process.env.KEY_SECRET)
+            .update(sign.toString())
+            .digest("hex");
+
+        if (razorpay_signature === expectedSign) {
+            return res.status(200).json({ message: "Payment verified successfully" });
+        } else {
+            return res.status(400).json({ message: "Invalid signature sent!" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Internal Server Error!" });
+        console.log(error);
+    }
+}
 
 
 
-module.exports = { loginController, registerController, authController, applyDoctorController, getAllNotificationController, deleteAllNotificationController, getAllDoctorsController, bookAppointmnetController, bookingAvailabilityController, userAppointmentsController };
+module.exports = { loginController, registerController, authController, applyDoctorController, getAllNotificationController, deleteAllNotificationController, getAllDoctorsController, bookAppointmnetController, bookingAvailabilityController, userAppointmentsController, paymentController, verifyController };

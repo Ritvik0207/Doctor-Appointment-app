@@ -22,6 +22,7 @@ const getDoctorInfoController = async (req, res) => {
 // update doc profile
 const updateProfileController = async (req, res) => {
     try {
+
         const doctor = await doctorModel.findOneAndUpdate(
             { userId: req.body.userId },
             req.body
@@ -92,7 +93,8 @@ const updateStatusController = async (req, res) => {
         notifcation.push({
             type: "status-updated",
             message: `your appointment has been updated ${status}`,
-            onCLickPath: "/doctor-appointments",
+            // onCLickPath: "/doctor-appointments",
+            onCLickPath: "/appointments",
         });
         await user.save();
         res.status(200).send({

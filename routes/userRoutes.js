@@ -1,5 +1,5 @@
 const express = require('express')
-const { loginController, registerController, authController, applyDoctorController, getAllNotificationController, deleteAllNotificationController, getAllDoctorsController, bookingAvailabilityController, bookAppointmnetController, userAppointmentsController, } = require('../controllers/userCtrl');
+const { loginController, registerController, authController, applyDoctorController, getAllNotificationController, deleteAllNotificationController, getAllDoctorsController, bookingAvailabilityController, bookAppointmnetController, userAppointmentsController, paymentController, verifyController, } = require('../controllers/userCtrl');
 const authMiddleware = require('../middlewares/authMiddleware');
 
 const router = express.Router()
@@ -39,6 +39,10 @@ router.post(
 );
 //Appointments List
 router.get("/user-appointments", authMiddleware, userAppointmentsController);
+
+//payment
+router.post("/makepayment", authMiddleware, paymentController);
+router.post("/verifypayment", authMiddleware, verifyController);
 
 
 module.exports = router;

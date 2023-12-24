@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { DatePicker, message, TimePicker } from "antd";
+import { Select, DatePicker, message, TimePicker } from "antd";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import { showLoading, hideLoading } from "../redux/features/alertSlice";
+import "../styles/booking.css";
+const { Option } = Select;
 
 const BookingPage = () => {
     const { user } = useSelector((state) => state.user);
@@ -37,6 +39,10 @@ const BookingPage = () => {
     // ============ handle availiblity
     const handleAvailability = async () => {
         try {
+
+            if (!date && !time) {
+                return alert("Date & Time Required");
+            }
             dispatch(showLoading());
             const res = await axios.post(
                 "/api/v1/user/booking-availbility",
@@ -63,10 +69,11 @@ const BookingPage = () => {
     // =============== booking func
     const handleBooking = async () => {
         try {
-            setIsAvailable(true);
+            //setIsAvailable(true);
             if (!date && !time) {
                 return alert("Date & Time Required");
             }
+            // console.log(time);
             dispatch(showLoading());
             const res = await axios.post(
                 "/api/v1/user/book-appointment",
@@ -93,6 +100,82 @@ const BookingPage = () => {
             console.log(error);
         }
     };
+    const getAvailableTimes = () => {
+        const startTime = moment(doctors.timings && doctors.timings[0], "HH:mm");
+        const endTime = moment(doctors.timings && doctors.timings[1], "HH:mm");
+        const step = 30; // Set your desired time interval (in minutes)
+        const times = [];
+
+        let currentTime = startTime;
+        while (currentTime.isBefore(endTime)) {
+            times.push(currentTime.format("HH:mm"));
+            currentTime = currentTime.add(step, "minutes");
+        }
+
+        return times;
+    };
+
+    const availableTimes = getAvailableTimes();
+
+    //payment
+    const initPayment = (data) => {
+        const options = {
+            key: "rzp_test_0pLj1oTm2LU4c9",
+            amount: data.amount,
+            currency: data.currency,
+            name: doctors.firstName,
+            description: "Test Transaction",
+            // image: book.img,
+            order_id: data.id,
+            handler: async (response) => {
+                try {
+                    const verifyUrl = "/api/v1/user/makepayment";
+                    //const { data } = await axios.post(verifyUrl, response);
+                    const { data } = await axios.post(
+                        "/api/v1/user/verifypayment",
+                        { response },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                            },
+                        }
+                    );
+                    console.log(data);
+                } catch (error) {
+                    console.log(error);
+                }
+            },
+            theme: {
+                color: "#3399cc",
+            },
+        };
+        const rzp1 = new window.Razorpay(options);
+        rzp1.open();
+        handleBooking();
+    };
+
+    const handlePayment = async () => {
+        try {
+            if (!date && !time) {
+                return alert("Date & Time Required");
+            }
+            const orderUrl = "/api/v1/user/makepayment";
+            // const { data } = await axios.post(orderUrl, { amount: doctors.feesPerCunsaltation });
+            const { data } = await axios.post(
+                "/api/v1/user/makepayment",
+                { amount: doctors.feesPerCunsaltation },
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                }
+            );
+            console.log(data);
+            initPayment(data.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     useEffect(() => {
         getUserData();
@@ -100,6 +183,7 @@ const BookingPage = () => {
     }, []);
     return (
         <Layout>
+
             <h3>Booking Page</h3>
             <div className="container m-2">
                 {doctors && (
@@ -118,17 +202,36 @@ const BookingPage = () => {
                                 className="m-2"
                                 format="DD-MM-YYYY"
                                 onChange={(values) => {
-                                    setDate(moment(values).format("DD-MM-YYYY"));
+                                    setIsAvailable(false);
+                                    setDate(values.format("DD-MM-YYYY"));
+                                    // setDate(moment(values).format("DD-MM-YYYY"));
                                 }}
                             />
-                            <TimePicker
+                            {/* <TimePicker
                                 aria-required={"true"}
                                 format="HH:mm"
                                 className="mt-3"
                                 onChange={(values) => {
-                                    setTime(moment(values).format("HH:mm"));
+                                    setIsAvailable(false);
+                                    setTime(values.format("HH:mm"));
+                                    // setTime(moment(values).format("HH:mm"));
                                 }}
-                            />
+                            /> */}
+                            <Select
+                                aria-required="true"
+                                className="mt-3"
+                                placeholder="Select Time"
+                                onChange={(value) => {
+                                    setIsAvailable(false);
+                                    setTime(value);
+                                }}
+                            >
+                                {availableTimes.map((time) => (
+                                    <Option key={time} value={time}>
+                                        {time}
+                                    </Option>
+                                ))}
+                            </Select>
 
                             <button
                                 className="btn btn-primary mt-2"
@@ -138,8 +241,12 @@ const BookingPage = () => {
                             </button>
 
                             <button className="btn btn-dark mt-2" onClick={handleBooking}>
-                                Book Now
+                                Book Now pay later
                             </button>
+                            <button className="btn btn-dark mt-2" onClick={handlePayment}>
+                                Book Now and pay
+                            </button>
+
                         </div>
                     </div>
                 )}
