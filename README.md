@@ -20,11 +20,8 @@ Before running this application, ensure that you have the following software ins
    ```bash
    cd Doctor-Appointment-app
 
-3.Install the necessary dependencies:
+3.Install the necessary dependencies and run the application:
    ```bash
    npm install
+  npm run dev
 
-4.Running the Application:
-
-   ```bash
-   npm run dev
