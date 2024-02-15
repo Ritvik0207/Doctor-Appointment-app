@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Select, DatePicker, message, TimePicker } from "antd";
 import moment from "moment";
@@ -17,6 +17,8 @@ const BookingPage = () => {
     const [time, setTime] = useState();
     const [isAvailable, setIsAvailable] = useState(false);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const [notes, setNotes] = useState("");
     // login user data
     const getUserData = async () => {
         try {
@@ -40,7 +42,7 @@ const BookingPage = () => {
     const handleAvailability = async () => {
         try {
 
-            if (!date && !time) {
+            if (!date || !time) {
                 return alert("Date & Time Required");
             }
             dispatch(showLoading());
@@ -70,7 +72,7 @@ const BookingPage = () => {
     const handleBooking = async () => {
         try {
             //setIsAvailable(true);
-            if (!date && !time) {
+            if (!date || !time) {
                 return alert("Date & Time Required");
             }
             // console.log(time);
@@ -84,6 +86,7 @@ const BookingPage = () => {
                     userInfo: user,
                     date: date,
                     time: time,
+                    problem: notes,
                 },
                 {
                     headers: {
@@ -94,6 +97,7 @@ const BookingPage = () => {
             dispatch(hideLoading());
             if (res.data.success) {
                 message.success(res.data.message);
+                navigate("/appointments");
             }
         } catch (error) {
             dispatch(hideLoading());
@@ -232,7 +236,23 @@ const BookingPage = () => {
                                     </Option>
                                 ))}
                             </Select>
+                            <textarea
+                                aria-required="true"
+                                className="mt-3"
+                                placeholder="Describe your problems  (Optional)"
+                                maxLength={100}
+                                value={notes}
+                                onChange={(e) => setNotes(e.target.value)}
+                                style={{
+                                    height: "auto",
+                                    backgroundColor: "white",
+                                    border: "1px solid #d9d9d9",
+                                    borderRadius: "8px",
+                                    padding: "6px 8px",
+                                    color: "inherit",
 
+                                }}
+                            />
                             <button
                                 className="btn btn-primary mt-2"
                                 onClick={handleAvailability}

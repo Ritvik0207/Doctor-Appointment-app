@@ -56,6 +56,10 @@ const Appointments = () => {
             ),
         },
         {
+            title: "Problem",
+            dataIndex: "problem",
+        },
+        {
             title: "Status",
             dataIndex: "status",
         },

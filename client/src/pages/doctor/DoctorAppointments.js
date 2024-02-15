@@ -65,6 +65,10 @@ const DoctorAppointments = () => {
             ),
         },
         {
+            title: "Problem",
+            dataIndex: "problem",
+        },
+        {
             title: "Status",
             dataIndex: "status",
         },
