@@ -17,10 +17,14 @@ Before running this application, ensure that you have the following software ins
    git clone https://github.com/Ritvik0207/Doctor-Appointment-app.git
 
 2. Navigate to the project directory:
+    ```bash
    cd Doctor-Appointment-app
 
 3.Install the necessary dependencies:
-  npm install
+    ```bash
+    npm install
 
 4.Running the Application:
-  npm run dev
+
+   ```bash
+     npm run dev
