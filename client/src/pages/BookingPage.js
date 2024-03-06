@@ -98,6 +98,8 @@ const BookingPage = () => {
             if (res.data.success) {
                 message.success(res.data.message);
                 navigate("/appointments");
+            } else {
+                message.success(res.data.message);
             }
         } catch (error) {
             dispatch(hideLoading());

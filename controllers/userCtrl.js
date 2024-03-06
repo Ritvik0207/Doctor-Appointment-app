@@ -230,31 +230,55 @@ const getAllDoctorsController = async (req, res) => {
 //BOOK APPOINTMENT
 const bookAppointmnetController = async (req, res) => {
     try {
-        req.body.date = moment(req.body.date, "DD-MM-YYYY").toISOString();
-        req.body.time = moment(req.body.time, "HH:mm").toISOString();
+        const date = moment(req.body.date, "DD-MM-YYYY").toISOString();
+        const finaltime = moment(req.body.time, "HH:mm").toISOString();
+        const doctorId = req.body.doctorId;
+
+        // Check if the appointment is available
+        const appointment = await appointmentModel.findOne({
+            doctorId,
+            date,
+            time: finaltime,
+        });
+
+        if (appointment) {
+            return res.status(200).send({
+                success: false,
+                message: "Appointment not available at this time",
+            });
+        }
+
+        // If appointment is available, proceed with booking
+        req.body.date = date;
+        req.body.time = finaltime;
         req.body.status = "pending";
         const newAppointment = new appointmentModel(req.body);
         await newAppointment.save();
+
+        // Notify the doctor about the new appointment request
         const user = await userModel.findOne({ _id: req.body.doctorInfo.userId });
         user.notifcation.push({
             type: "New-appointment-request",
-            message: `A nEw Appointment Request from ${req.body.userInfo.name}`,
-            onCLickPath: "/doctor-appointments",
+            message: `A new Appointment Request from ${req.body.userInfo.name}`,
+            onClickPath: "/doctor-appointments",
         });
         await user.save();
+
+        // Send success response
         res.status(200).send({
             success: true,
-            message: "Appointment Book succesfully",
+            message: "Appointment booked successfully",
         });
     } catch (error) {
         console.log(error);
         res.status(500).send({
             success: false,
             error,
-            message: "Error While Booking Appointment",
+            message: "Error while booking appointment",
         });
     }
 };
+
 
 //booking bookingAvailabilityController
 const bookingAvailabilityController = async (req, res) => {
