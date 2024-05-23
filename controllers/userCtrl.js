@@ -284,23 +284,22 @@ const bookAppointmnetController = async (req, res) => {
 const bookingAvailabilityController = async (req, res) => {
     try {
         const date = moment(req.body.date, "DD-MM-YYYY").toISOString();
-        const fromTime = moment(req.body.time, "HH:mm")
-            .subtract(1, "hours")
-            .toISOString();
+        const fromTime = moment(req.body.time, "HH:mm").subtract(1, "hours").toISOString();
         const toTime = moment(req.body.time, "HH:mm").add(1, "hours").toISOString();
         const doctorId = req.body.doctorId;
         const finaltime = moment(req.body.time, "HH:mm").toISOString();
+        const finalTimePlusHalfHour = moment(req.body.time, "HH:mm").add(30, "minutes").toISOString(); // Add half an hour to final time
         const appointments = await appointmentModel.find({
             doctorId,
             date,
             time: {
                 $gte: finaltime,
-                $lte: finaltime,
+                $lt: finalTimePlusHalfHour, // Use the adjusted time here
             },
         });
         if (appointments.length > 0) {
             return res.status(200).send({
-                message: "Appointments not Availibale at this time",
+                message: "Appointments not available at this time",
                 success: true,
             });
         } else {
@@ -314,10 +313,11 @@ const bookingAvailabilityController = async (req, res) => {
         res.status(500).send({
             success: false,
             error,
-            message: "Error In Booking",
+            message: "Error in booking",
         });
     }
 };
+
 // const bookAppointmentController = async (req, res) => {
 //     try {
 //         const appointmentTime = new Date(`${req.body.date}T${req.body.time}`);
